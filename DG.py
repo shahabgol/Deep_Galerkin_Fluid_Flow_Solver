@@ -92,7 +92,17 @@ def boundary_conditions_loss(model, x, y, boundary_type="other"):
 # ---------------------------
 # Training Setup
 # ---------------------------
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Check for NVIDIA GPU (CUDA)
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+
+# Check for Apple Silicon GPU (MPS)
+elif torch.backends.mps.is_available():
+    device = torch.device("mps")
+
+# Default to CPU
+else:
+    device = torch.device("cpu")
 
 model = NavierStokesNet(hidden_dim=64, num_hidden_layers=4).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
